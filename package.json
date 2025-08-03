@@ -1,7 +1,10 @@
 {
-  "name": "career-guidance",
+  "name": "career-guidance-system",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A comprehensive career guidance system with aptitude testing and college recommendations",
+  "keywords": ["career guidance", "aptitude test", "college recommendations", "education", "career counseling"],
+  "author": "Career Guidance System",
   "type": "module",
   "scripts": {
     "dev": "vite",
