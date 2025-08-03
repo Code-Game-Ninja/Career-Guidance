@@ -1,6 +1,6 @@
 # 🎓 Career Guidance System
 
-A comprehensive web application that helps students discover their perfect career path through aptitude testing, personalized recommendations, and college guidance.
+A comprehensive web application that helps students discover their career path through aptitude testing, personalized recommendations, and college guidance.
 
 ![Career Guidance System](https://img.shields.io/badge/Status-Live-brightgreen)
 ![React](https://img.shields.io/badge/React-18.2.0-blue)
@@ -15,20 +15,23 @@ A comprehensive web application that helps students discover their perfect caree
 ## ✨ Features
 
 ### 🎯 For Students
-- **Aptitude Testing**: Comprehensive career aptitude assessment
-- **Personalized Results**: Detailed analysis of strengths and interests
-- **Career Recommendations**: AI-powered career suggestions based on test results
-- **College Database**: Extensive database of colleges and universities
-- **Previous Results**: Track your test history and progress
+- **Aptitude Testing**: 20-question career aptitude assessment with 30-minute time limit
+- **Personalized Results**: Detailed analysis of strengths and interests based on test responses
+- **Career Recommendations**: Career suggestions based on aptitude test results and interest tags
+- **College Database**: Extensive database of colleges and universities with filtering options
+- **College Search & Filter**: Search colleges by location, stream, rating, and other criteria
+- **Save Colleges**: Bookmark and manage your preferred colleges
+- **Test History**: Track your test history and view previous results
 - **User Dashboard**: Personalized dashboard with statistics and saved colleges
+- **Progress Tracking**: Monitor your career exploration journey
 
 ### 👨‍💼 For Administrators
 - **Admin Dashboard**: Overview of system statistics and user activity
 - **User Management**: View, manage, and control user access
-- **Test Analytics**: Real-time analytics and performance metrics
+- **Test Analytics**: View test results and performance metrics
 - **Question Management**: Add, edit, and manage aptitude test questions
 - **College Management**: Maintain and update college database
-- **System Monitoring**: Monitor system health and performance
+- **System Monitoring**: Monitor system health and user activity
 
 ### 🎨 User Experience
 - **Responsive Design**: Works perfectly on all devices (mobile, tablet, desktop)
@@ -151,7 +154,7 @@ career-guidance/
 - `POST /api/auth/logout` - User logout
 
 ### Aptitude Testing
-- `GET /api/aptitude/questions` - Get test questions
+- `GET /api/aptitude/questions` - Get test questions (20 questions)
 - `POST /api/aptitude/submit` - Submit test results
 - `GET /api/aptitude/history` - Get user's test history
 
