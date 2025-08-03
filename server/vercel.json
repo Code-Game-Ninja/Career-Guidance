@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "career-guidance-backend",
   "builds": [
     {
       "src": "server.js",
@@ -12,15 +11,5 @@
       "src": "/(.*)",
       "dest": "/server.js"
     }
-  ],
-  "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "JWT_SECRET": "@jwt_secret",
-    "NODE_ENV": "production"
-  },
-  "functions": {
-    "server.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  ]
 } 
