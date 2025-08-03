@@ -31,9 +31,10 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// CORS configuration - must come before routes
+// CORS configuration for unified deployment
+// Since frontend and backend are on the same domain, we can allow all origins
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'],
+  origin: true, // Allow all origins for unified deployment
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
