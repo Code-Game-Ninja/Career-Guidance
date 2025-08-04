@@ -15,6 +15,7 @@ import {
   Save,
   Tag
 } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const AdminQuestions = () => {
   const { user } = useAuth();
@@ -39,25 +40,26 @@ const AdminQuestions = () => {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/admin/questions');
+      const response = await axios.get(API_ENDPOINTS.ADMIN_QUESTIONS);
       setQuestions(response.data.data.questions);
     } catch (error) {
       console.error('Error fetching questions:', error);
+      toast.error('Failed to load questions');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteQuestion = async (questionId) => {
-    if (window.confirm('Are you sure you want to delete this question?')) {
-      try {
-        await axios.delete(`http://localhost:5000/api/admin/questions/${questionId}`);
-        toast.success('Question deleted successfully');
-        fetchQuestions();
-      } catch (error) {
-        console.error('Error deleting question:', error);
-        toast.error('Failed to delete question');
-      }
+    if (!confirm('Are you sure you want to delete this question?')) return;
+    
+    try {
+      await axios.delete(`${API_ENDPOINTS.ADMIN_QUESTIONS}/${questionId}`);
+      toast.success('Question deleted successfully');
+      fetchQuestions();
+    } catch (error) {
+      console.error('Error deleting question:', error);
+      toast.error('Failed to delete question');
     }
   };
 
@@ -112,10 +114,10 @@ const AdminQuestions = () => {
 
     try {
       if (editingQuestion) {
-        await axios.put(`http://localhost:5000/api/admin/questions/${editingQuestion._id}`, formData);
+        await axios.put(`${API_ENDPOINTS.ADMIN_QUESTIONS}/${editingQuestion._id}`, formData);
         toast.success('Question updated successfully');
       } else {
-        await axios.post('http://localhost:5000/api/admin/questions', formData);
+        await axios.post(API_ENDPOINTS.ADMIN_QUESTIONS, formData);
         toast.success('Question added successfully');
       }
       setShowModal(false);

@@ -12,14 +12,18 @@ import {
   AlertCircle,
   Eye,
   Edit,
-  Trash2
+  Trash2,
+  ShieldOff,
+  Filter
 } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const AdminUsers = () => {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterRole, setFilterRole] = useState('all');
 
   useEffect(() => {
     fetchUsers();
@@ -27,22 +31,23 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/admin/users');
+      const response = await axios.get(API_ENDPOINTS.ADMIN_USERS);
       setUsers(response.data.data.users);
     } catch (error) {
       console.error('Error fetching users:', error);
+      toast.error('Failed to load users');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleToggleUserStatus = async (userId, currentStatus) => {
+  const handleToggleStatus = async (userId) => {
     try {
-      await axios.patch(`http://localhost:5000/api/admin/users/${userId}/toggle-status`);
-      toast.success(`User ${currentStatus ? 'deactivated' : 'activated'} successfully`);
-      fetchUsers();
+      await axios.patch(`${API_ENDPOINTS.ADMIN_USER_TOGGLE}/${userId}/toggle-status`);
+      toast.success('User status updated successfully');
+      fetchUsers(); // Refresh the list
     } catch (error) {
-      console.error('Error toggling user status:', error);
+      console.error('Error updating user status:', error);
       toast.error('Failed to update user status');
     }
   };
@@ -156,7 +161,7 @@ const AdminUsers = () => {
                         <Edit className="h-5 w-5" />
                       </button>
                       <button 
-                        onClick={() => handleToggleUserStatus(user._id, user.isActive)}
+                        onClick={() => handleToggleStatus(user._id)}
                         className={`p-3 rounded-xl transition-all duration-300 hover:shadow-md ${
                           user.isActive 
                             ? 'text-red-600 hover:bg-red-50' 

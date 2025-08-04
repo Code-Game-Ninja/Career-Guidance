@@ -13,6 +13,7 @@ import {
   Target,
   Zap
 } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const Quiz = () => {
   const [questions, setQuestions] = useState([]);
@@ -40,7 +41,7 @@ const Quiz = () => {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/aptitude/questions');
+      const response = await axios.get(API_ENDPOINTS.APTITUDE_QUESTIONS);
       setQuestions(response.data.data.questions);
       setLoading(false);
     } catch (error) {
@@ -84,7 +85,7 @@ const Quiz = () => {
         selectedOption: answers[question._id] || null
       })).filter(answer => answer.selectedOption !== null);
 
-      const response = await axios.post('http://localhost:5000/api/aptitude/submit', {
+      const response = await axios.post(API_ENDPOINTS.APTITUDE_SUBMIT, {
         answers: answersArray
       });
 
@@ -98,7 +99,7 @@ const Quiz = () => {
       });
     } catch (error) {
       console.error('Error submitting test:', error);
-      toast.error('Failed to submit test. Please try again.');
+      toast.error('Failed to submit test');
     } finally {
       setSubmitting(false);
     }

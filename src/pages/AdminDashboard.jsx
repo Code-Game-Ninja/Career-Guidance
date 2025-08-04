@@ -16,6 +16,7 @@ import {
   Loader2,
   Shield
 } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -28,7 +29,7 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/admin/dashboard');
+      const response = await axios.get(API_ENDPOINTS.ADMIN_DASHBOARD);
       setDashboardData(response.data.data);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);

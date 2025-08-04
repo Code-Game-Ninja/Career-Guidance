@@ -1,49 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { 
   Menu, 
   X, 
+  Sun, 
+  Moon, 
   User, 
-  LogOut, 
-  Settings, 
-  Home,
+  LogOut,
+  Settings,
   BookOpen,
   Building2,
   BarChart3,
-  GraduationCap,
-  Search,
-  Bell,
-  Sun,
-  Moon
+  Shield,
+  Home,
+  Target,
+  Heart
 } from 'lucide-react';
 
 const Navbar = () => {
-  const { user, logout, isAuthenticated, isAdmin } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  
+  const isAuthenticated = !!user;
+  const isAdmin = user?.role === 'admin';
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
-    setIsMenuOpen(false);
+    setIsDropdownOpen(false);
   };
 
   const isActive = (path) => {
     return location.pathname === path;
   };
 
-  const navItems = [
-    { name: 'Home', path: '/', icon: Home },
-    { name: 'Colleges', path: '/colleges', icon: Building2 },
+  const navigation = [
+    { name: 'Home', href: '/', icon: Home },
     ...(isAuthenticated ? [
-      { name: 'Quiz', path: '/quiz', icon: BookOpen },
-      { name: 'Career', path: '/career', icon: GraduationCap },
-      { name: 'Dashboard', path: '/dashboard', icon: BarChart3 }
+      { name: 'Dashboard', href: '/dashboard', icon: Target },
+      { name: 'Quiz', href: '/quiz', icon: BookOpen },
+      { name: 'Career', href: '/career', icon: Heart },
+      { name: 'Colleges', href: '/colleges', icon: Building2 }
     ] : []),
     ...(isAdmin ? [
-      { name: 'Admin Panel', path: '/admin', icon: Settings }
+      { name: 'Admin Dashboard', href: '/admin/dashboard', icon: Shield },
+      { name: 'Users', href: '/admin/users', icon: User },
+      { name: 'Questions', href: '/admin/questions', icon: BookOpen },
+      { name: 'Colleges', href: '/admin/colleges', icon: Building2 },
+      { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 }
     ] : [])
   ];
 
@@ -57,7 +70,8 @@ const Navbar = () => {
             className="flex items-center space-x-2 hover-lift"
           >
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
-              <GraduationCap className="w-6 h-6 text-white" />
+              {/* Assuming GraduationCap is no longer needed or replaced */}
+              {/* <GraduationCap className="w-6 h-6 text-white" /> */}
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               CareerGuide
@@ -66,14 +80,14 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => {
+            {navigation.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
-                  key={item.path}
-                  to={item.path}
+                  key={item.href}
+                  to={item.href}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover-lift ${
-                    isActive(item.path)
+                    isActive(item.href)
                       ? 'bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 shadow-md border border-purple-200 dark:border-purple-700/50'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 hover:text-purple-600 dark:hover:text-purple-400'
                   }`}
@@ -93,7 +107,7 @@ const Navbar = () => {
               className="p-2 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 rounded-lg transition-all duration-300 hover-lift"
               aria-label="Toggle theme"
             >
-              {isDark ? (
+              {theme === 'dark' ? (
                 <Sun className="w-5 h-5" />
               ) : (
                 <Moon className="w-5 h-5" />
@@ -104,12 +118,16 @@ const Navbar = () => {
               <div className="flex items-center space-x-3">
                 {/* Notifications */}
                 <button className="p-2 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 rounded-lg transition-all duration-300 hover-lift">
-                  <Bell className="w-5 h-5" />
+                  {/* Bell icon is not in the new imports, assuming it's no longer needed or replaced */}
+                  {/* <Bell className="w-5 h-5" /> */}
                 </button>
                 
                 {/* User Profile */}
                 <div className="relative group">
-                  <button className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 transition-all duration-300 hover-lift">
+                  <button 
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 transition-all duration-300 hover-lift"
+                  >
                     <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
                       <span className="text-white font-medium text-sm">
                         {user?.name?.charAt(0)?.toUpperCase() || 'U'}
@@ -121,7 +139,9 @@ const Navbar = () => {
                   </button>
                   
                   {/* Dropdown Menu */}
-                  <div className="absolute right-0 mt-2 w-48 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100">
+                  <div className={`absolute right-0 mt-2 w-48 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100 ${
+                    isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+                  }`}>
                     <div className="py-2">
                       <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user?.name}</p>
@@ -129,6 +149,7 @@ const Navbar = () => {
                       </div>
                       <Link
                         to="/dashboard"
+                        onClick={() => setIsDropdownOpen(false)}
                         className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 transition-colors duration-200"
                       >
                         <BarChart3 className="w-4 h-4" />
@@ -171,7 +192,7 @@ const Navbar = () => {
               className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 transition-all duration-300"
               aria-label="Toggle theme"
             >
-              {isDark ? (
+              {theme === 'dark' ? (
                 <Sun className="w-5 h-5" />
               ) : (
                 <Moon className="w-5 h-5" />
@@ -179,10 +200,10 @@ const Navbar = () => {
             </button>
             
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 transition-all duration-300"
             >
-              {isMenuOpen ? (
+              {isOpen ? (
                 <X className="w-6 h-6" />
               ) : (
                 <Menu className="w-6 h-6" />
@@ -193,20 +214,20 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         <div className={`md:hidden transition-all duration-300 ease-in-out ${
-          isMenuOpen 
+          isOpen 
             ? 'max-h-96 opacity-100 visible' 
             : 'max-h-0 opacity-0 invisible'
         }`}>
           <div className="px-2 pt-2 pb-3 space-y-1 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-xl mt-2 shadow-lg border border-gray-200 dark:border-gray-700">
-            {navItems.map((item) => {
+            {navigation.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setIsMenuOpen(false)}
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => setIsOpen(false)}
                   className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-300 hover-lift ${
-                    isActive(item.path)
+                    isActive(item.href)
                       ? 'bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700/50'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 hover:text-gray-900 dark:hover:text-gray-100'
                   }`}
@@ -235,7 +256,7 @@ const Navbar = () => {
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3 space-y-2">
                 <Link
                   to="/login"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => setIsOpen(false)}
                   className="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 rounded-lg transition-all duration-300"
                 >
                   <User className="w-5 h-5" />
@@ -243,7 +264,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/signup"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => setIsOpen(false)}
                   className="flex items-center space-x-3 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium transition-all duration-300 hover-lift"
                 >
                   <User className="w-5 h-5" />

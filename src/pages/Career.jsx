@@ -21,6 +21,7 @@ import {
   BarChart3,
   Clock
 } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const Career = () => {
   const location = useLocation();
@@ -43,7 +44,7 @@ const Career = () => {
 
   const fetchSavedColleges = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/user/saved-colleges');
+      const response = await axios.get(API_ENDPOINTS.USER_SAVED_COLLEGES);
       const savedIds = new Set(response.data.data.savedColleges.map(college => college._id));
       setSavedColleges(savedIds);
     } catch (error) {
@@ -54,7 +55,7 @@ const Career = () => {
   const fetchPreviousResults = async () => {
     try {
       setLoadingHistory(true);
-      const response = await axios.get('http://localhost:5000/api/aptitude/history');
+      const response = await axios.get(API_ENDPOINTS.APTITUDE_HISTORY);
       // Filter out the current result to avoid duplication
       const filteredResults = response.data.data.results.filter(
         prevResult => prevResult._id !== result?.id
@@ -72,7 +73,7 @@ const Career = () => {
     setLoading(true);
     try {
       if (savedColleges.has(collegeId)) {
-        await axios.delete(`http://localhost:5000/api/user/remove-college/${collegeId}`);
+        await axios.delete(`${API_ENDPOINTS.USER_REMOVE_COLLEGE}/${collegeId}`);
         setSavedColleges(prev => {
           const newSet = new Set(prev);
           newSet.delete(collegeId);
@@ -80,7 +81,7 @@ const Career = () => {
         });
         toast.success('College removed from saved list');
       } else {
-        await axios.post('http://localhost:5000/api/user/save-college', { collegeId });
+        await axios.post(API_ENDPOINTS.USER_SAVE_COLLEGE, { collegeId });
         setSavedColleges(prev => new Set([...prev, collegeId]));
         toast.success('College saved successfully');
       }

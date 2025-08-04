@@ -2,13 +2,20 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff, Mail, Lock, ArrowLeft, Shield } from 'lucide-react';
+import { 
+  Eye, 
+  EyeOff, 
+  Mail, 
+  Lock, 
+  Shield,
+  Loader2
+} from 'lucide-react';
 
 const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { adminLogin } = useAuth();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const {
     register,
@@ -17,16 +24,16 @@ const AdminLogin = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
+    setLoading(true);
     try {
-      const result = await adminLogin(data.email, data.password);
+      const result = await login(data.email, data.password);
       if (result.success) {
-        navigate('/admin');
+        navigate('/admin/dashboard');
       }
     } catch (error) {
       console.error('Admin login error:', error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -132,12 +139,12 @@ const AdminLogin = () => {
           <div>
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={loading}
               className="group relative w-full flex justify-center py-4 px-6 border border-transparent text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-red-600 to-pink-600 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
             >
-              {isLoading ? (
+              {loading ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  <Loader2 className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
                   Signing in...
                 </div>
               ) : (

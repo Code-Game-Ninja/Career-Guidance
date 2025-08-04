@@ -27,6 +27,7 @@ import {
   Filler
 } from 'chart.js';
 import { Bar, Line } from 'react-chartjs-2';
+import { API_ENDPOINTS } from '../config/api.js';
 
 // Register Chart.js components
 ChartJS.register(
@@ -43,21 +44,22 @@ ChartJS.register(
 
 const AdminAnalytics = () => {
   const { user } = useAuth();
-  const [analytics, setAnalytics] = useState(null);
+  const [analyticsData, setAnalyticsData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState({
     userGrowth: null,
     testCompletion: null
   });
+  const [selectedPeriod, setSelectedPeriod] = useState('week');
 
   useEffect(() => {
     fetchAnalyticsData();
-  }, []);
+  }, [selectedPeriod]);
 
   const fetchAnalyticsData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/admin/dashboard');
-      setAnalytics(response.data.data);
+      const response = await axios.get(API_ENDPOINTS.ADMIN_DASHBOARD);
+      setAnalyticsData(response.data.data);
       
       // Generate real chart data from the analytics
       generateChartData(response.data.data);
@@ -361,7 +363,7 @@ const AdminAnalytics = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-300">Total Users</p>
-                <p className="text-2xl font-bold text-white">{analytics?.stats?.totalUsers || 0}</p>
+                <p className="text-2xl font-bold text-white">{analyticsData?.stats?.totalUsers || 0}</p>
                 <p className="text-xs text-green-400">+{Math.floor(Math.random() * 20) + 5}% from last month</p>
               </div>
             </div>
@@ -374,7 +376,7 @@ const AdminAnalytics = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-300">Tests Taken</p>
-                <p className="text-2xl font-bold text-white">{analytics?.stats?.totalTests || 0}</p>
+                <p className="text-2xl font-bold text-white">{analyticsData?.stats?.totalTests || 0}</p>
                 <p className="text-xs text-green-400">+{Math.floor(Math.random() * 15) + 3}% from last month</p>
               </div>
             </div>
@@ -387,7 +389,7 @@ const AdminAnalytics = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-300">Colleges</p>
-                <p className="text-2xl font-bold text-white">{analytics?.stats?.totalColleges || 0}</p>
+                <p className="text-2xl font-bold text-white">{analyticsData?.stats?.totalColleges || 0}</p>
                 <p className="text-xs text-green-400">+{Math.floor(Math.random() * 10) + 2}% from last month</p>
               </div>
             </div>
@@ -400,7 +402,7 @@ const AdminAnalytics = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-300">Active Users</p>
-                <p className="text-2xl font-bold text-white">{analytics?.recentUsers?.length || 0}</p>
+                <p className="text-2xl font-bold text-white">{analyticsData?.recentUsers?.length || 0}</p>
                 <p className="text-xs text-green-400">+{Math.floor(Math.random() * 25) + 8}% from last month</p>
               </div>
             </div>
@@ -456,7 +458,7 @@ const AdminAnalytics = () => {
             <h2 className="text-2xl font-bold text-gray-900">Recent Activity</h2>
           </div>
           <div className="space-y-4">
-            {analytics?.recentUsers?.slice(0, 3).map((user, index) => (
+            {analyticsData?.recentUsers?.slice(0, 3).map((user, index) => (
               <div key={user._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
@@ -474,7 +476,7 @@ const AdminAnalytics = () => {
               </div>
             ))}
             
-            {analytics?.recentTests?.slice(0, 3).map((test, index) => (
+            {analyticsData?.recentTests?.slice(0, 3).map((test, index) => (
               <div key={test._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
@@ -514,7 +516,7 @@ const AdminAnalytics = () => {
                 </tr>
               </thead>
               <tbody>
-                {analytics?.recentTests?.slice(0, 5).map((test) => (
+                {analyticsData?.recentTests?.slice(0, 5).map((test) => (
                   <tr key={test._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                     <td className="py-3 px-4">
                       <div>

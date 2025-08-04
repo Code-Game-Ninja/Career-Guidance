@@ -15,36 +15,38 @@ import {
   Shield,
   Zap,
   Heart,
-  Star
+  Star,
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { signup } = useAuth();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const {
-    register,
+    register: registerField,
     handleSubmit,
-    watch,
-    formState: { errors }
+    formState: { errors },
+    watch
   } = useForm();
 
   const password = watch('password');
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
+    setLoading(true);
     try {
-      const result = await signup(data.name, data.email, data.password);
+      const result = await register(data);
       if (result.success) {
         navigate('/dashboard');
       }
     } catch (error) {
       console.error('Signup error:', error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -169,7 +171,7 @@ const Signup = () => {
                       id="name"
                       type="text"
                       autoComplete="name"
-                      {...register('name', {
+                      {...registerField('name', {
                         required: 'Name is required',
                         minLength: {
                           value: 2,
@@ -209,7 +211,7 @@ const Signup = () => {
                       id="email"
                       type="email"
                       autoComplete="email"
-                      {...register('email', {
+                      {...registerField('email', {
                         required: 'Email is required',
                         pattern: {
                           value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -245,7 +247,7 @@ const Signup = () => {
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       autoComplete="new-password"
-                      {...register('password', {
+                      {...registerField('password', {
                         required: 'Password is required',
                         minLength: {
                           value: 6,
@@ -292,7 +294,7 @@ const Signup = () => {
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       autoComplete="new-password"
-                      {...register('confirmPassword', {
+                      {...registerField('confirmPassword', {
                         required: 'Please confirm your password',
                         validate: value => value === password || 'Passwords do not match'
                       })}
@@ -327,12 +329,12 @@ const Signup = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={loading}
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-6 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                {isLoading ? (
+                {loading ? (
                   <div className="flex items-center justify-center space-x-2">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <Loader2 className="w-5 h-5 animate-spin" />
                     <span>Creating Account...</span>
                   </div>
                 ) : (

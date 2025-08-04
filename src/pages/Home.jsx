@@ -3,20 +3,20 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   BookOpen, 
-  Building2, 
-  BarChart3, 
-  GraduationCap,
+  Target, 
+  Users, 
+  Award, 
+  Star, 
   ArrowRight,
-  Star,
-  Users,
-  Award,
   CheckCircle,
-  Play,
-  Sparkles
+  Zap,
+  Heart,
+  TrendingUp
 } from 'lucide-react';
 
 const Home = () => {
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
 
   const features = [
     {
@@ -27,21 +27,21 @@ const Home = () => {
       image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=300&fit=crop&crop=center'
     },
     {
-      icon: Building2,
+      icon: Target,
       title: 'College Database',
       description: 'Explore thousands of colleges with detailed information and rankings.',
       color: 'from-green-500 to-emerald-600',
       image: 'https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=300&fit=crop&crop=center'
     },
     {
-      icon: BarChart3,
+      icon: Zap,
       title: 'Career Analytics',
       description: 'Get personalized career recommendations based on your test results.',
       color: 'from-purple-500 to-violet-600',
       image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop&crop=center'
     },
     {
-      icon: GraduationCap,
+      icon: Heart,
       title: 'Expert Guidance',
       description: 'Access professional career counseling and guidance resources.',
       color: 'from-orange-500 to-red-600',
@@ -50,8 +50,8 @@ const Home = () => {
   ];
 
   const stats = [
-    { number: '999+', label: 'Colleges', icon: Building2 },
-    { number: '50+', label: 'Career Paths', icon: GraduationCap },
+    { number: '999+', label: 'Colleges', icon: Target },
+    { number: '50+', label: 'Career Paths', icon: Heart },
     { number: '10K+', label: 'Students Helped', icon: Users },
     { number: '95%', label: 'Success Rate', icon: Award }
   ];
@@ -97,7 +97,7 @@ const Home = () => {
             {/* Left Content */}
             <div className="text-center lg:text-left">
               <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-full text-sm font-medium mb-6 lg:mb-8 slide-in-left shadow-lg">
-                <Sparkles className="w-4 h-4" />
+                <Zap className="w-4 h-4" />
                 <span>Professional Career Guidance</span>
               </div>
               
@@ -117,7 +117,7 @@ const Home = () => {
                     to="/quiz"
                     className="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover-lift material-button flex items-center justify-center space-x-2"
                   >
-                    <Play className="w-5 h-5" />
+                    <Zap className="w-5 h-5" />
                     <span>Take Aptitude Test</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
@@ -134,7 +134,7 @@ const Home = () => {
                       to="/colleges"
                       className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover-lift border border-gray-200/50 dark:border-gray-700/50 flex items-center justify-center space-x-2"
                     >
-                      <Building2 className="w-5 h-5" />
+                      <Target className="w-5 h-5" />
                       <span>Explore Colleges</span>
                     </Link>
                   </>
@@ -181,7 +181,7 @@ const Home = () => {
                   
                   {/* Main content */}
                   <div className="text-center text-white relative z-10">
-                    <GraduationCap className="w-16 h-16 lg:w-20 lg:h-20 mx-auto mb-4 lg:mb-6" />
+                    <Heart className="w-16 h-16 lg:w-20 lg:h-20 mx-auto mb-4 lg:mb-6" />
                     <h3 className="text-xl lg:text-2xl font-bold mb-2">Career Guidance</h3>
                     <p className="text-purple-100 text-sm lg:text-base">Discover Your Path</p>
                   </div>
@@ -363,7 +363,7 @@ const Home = () => {
               to="/colleges"
               className="group bg-transparent text-white border-2 border-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-purple-600 transition-all duration-300 hover-lift flex items-center justify-center space-x-2"
             >
-              <Building2 className="w-5 h-5" />
+              <Target className="w-5 h-5" />
               <span>Explore Colleges</span>
             </Link>
           </div>

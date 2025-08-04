@@ -14,8 +14,11 @@ import {
   AlertCircle,
   X,
   Save,
-  Tag
+  Tag,
+  Filter,
+  ExternalLink
 } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const AdminColleges = () => {
   const { user } = useAuth();
@@ -39,7 +42,9 @@ const AdminColleges = () => {
     rank: 0,
     website: '',
     phone: '',
-    email: ''
+    email: '',
+    facilities: [],
+    admissionCriteria: ''
   });
 
   useEffect(() => {
@@ -48,27 +53,26 @@ const AdminColleges = () => {
 
   const fetchColleges = async () => {
     try {
-      // Remove the limit to get all colleges
-      const response = await axios.get('http://localhost:5000/api/admin/colleges?limit=1000');
+      const response = await axios.get(`${API_ENDPOINTS.ADMIN_COLLEGES}?limit=1000`);
       setColleges(response.data.data.colleges);
     } catch (error) {
       console.error('Error fetching colleges:', error);
-      toast.error('Failed to fetch colleges');
+      toast.error('Failed to load colleges');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteCollege = async (collegeId) => {
-    if (window.confirm('Are you sure you want to delete this college?')) {
-      try {
-        await axios.delete(`http://localhost:5000/api/admin/colleges/${collegeId}`);
-        toast.success('College deleted successfully');
-        fetchColleges();
-      } catch (error) {
-        console.error('Error deleting college:', error);
-        toast.error('Failed to delete college');
-      }
+    if (!confirm('Are you sure you want to delete this college?')) return;
+    
+    try {
+      await axios.delete(`${API_ENDPOINTS.ADMIN_COLLEGES}/${collegeId}`);
+      toast.success('College deleted successfully');
+      fetchColleges();
+    } catch (error) {
+      console.error('Error deleting college:', error);
+      toast.error('Failed to delete college');
     }
   };
 
@@ -88,7 +92,9 @@ const AdminColleges = () => {
       rank: college.rank || 0,
       website: college.website || '',
       phone: college.phone || '',
-      email: college.email || ''
+      email: college.email || '',
+      facilities: college.facilities || [],
+      admissionCriteria: college.admissionCriteria || ''
     });
     setShowModal(true);
   };
@@ -109,7 +115,9 @@ const AdminColleges = () => {
       rank: 0,
       website: '',
       phone: '',
-      email: ''
+      email: '',
+      facilities: [],
+      admissionCriteria: ''
     });
     setShowModal(true);
   };
@@ -124,18 +132,42 @@ const AdminColleges = () => {
 
     try {
       if (editingCollege) {
-        await axios.put(`http://localhost:5000/api/admin/colleges/${editingCollege._id}`, formData);
+        await axios.put(`${API_ENDPOINTS.ADMIN_COLLEGES}/${editingCollege._id}`, formData);
         toast.success('College updated successfully');
       } else {
-        await axios.post('http://localhost:5000/api/admin/colleges', formData);
-        toast.success('College added successfully');
+        await axios.post(API_ENDPOINTS.ADMIN_COLLEGES, formData);
+        toast.success('College created successfully');
       }
+      
       setShowModal(false);
+      setEditingCollege(null);
+      resetForm();
       fetchColleges();
     } catch (error) {
       console.error('Error saving college:', error);
       toast.error('Failed to save college');
     }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      location: {
+        state: '',
+        city: '',
+        address: ''
+      },
+      streams: [],
+      interestTags: [],
+      description: '',
+      rating: 0,
+      rank: 0,
+      website: '',
+      phone: '',
+      email: '',
+      facilities: [],
+      admissionCriteria: ''
+    });
   };
 
   const addStream = () => {

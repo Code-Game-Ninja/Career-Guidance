@@ -40,11 +40,11 @@ function App() {
                 <Route path="/career" element={<PrivateRoute><Career /></PrivateRoute>} />
                 <Route path="/colleges" element={<PrivateRoute><Collage /></PrivateRoute>} />
                 <Route path="/admin/login" element={<AdminLogin />} />
-                <Route path="/admin/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
-                <Route path="/admin/questions" element={<PrivateRoute><AdminQuestions /></PrivateRoute>} />
-                <Route path="/admin/colleges" element={<PrivateRoute><AdminColleges /></PrivateRoute>} />
-                <Route path="/admin/users" element={<PrivateRoute><AdminUsers /></PrivateRoute>} />
-                <Route path="/admin/analytics" element={<PrivateRoute><AdminAnalytics /></PrivateRoute>} />
+                <Route path="/admin/dashboard" element={<PrivateRoute requireAdmin><AdminDashboard /></PrivateRoute>} />
+                <Route path="/admin/questions" element={<PrivateRoute requireAdmin><AdminQuestions /></PrivateRoute>} />
+                <Route path="/admin/colleges" element={<PrivateRoute requireAdmin><AdminColleges /></PrivateRoute>} />
+                <Route path="/admin/users" element={<PrivateRoute requireAdmin><AdminUsers /></PrivateRoute>} />
+                <Route path="/admin/analytics" element={<PrivateRoute requireAdmin><AdminAnalytics /></PrivateRoute>} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>

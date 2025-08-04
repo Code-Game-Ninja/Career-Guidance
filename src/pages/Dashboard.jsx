@@ -18,6 +18,7 @@ import {
   Target,
   Zap
 } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -33,9 +34,9 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const [statsRes, savedCollegesRes, historyRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/user/stats'),
-        axios.get('http://localhost:5000/api/user/saved-colleges'),
-        axios.get('http://localhost:5000/api/aptitude/history')
+        axios.get(API_ENDPOINTS.USER_STATS),
+        axios.get(API_ENDPOINTS.USER_SAVED_COLLEGES),
+        axios.get(API_ENDPOINTS.APTITUDE_HISTORY)
       ]);
 
       setStats(statsRes.data.data);

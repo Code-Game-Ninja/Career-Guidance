@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import API_BASE_URL, { API_ENDPOINTS } from '../config/api.js';
 
 const AuthContext = createContext();
 
@@ -15,94 +16,44 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('token'));
-
-  // Get API base URL from environment or use default
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-  // Configure axios defaults and interceptors
-  useEffect(() => {
-    // Set default base URL
-    axios.defaults.baseURL = API_BASE_URL;
-    
-    // Set default headers
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    } else {
-      delete axios.defaults.headers.common['Authorization'];
-    }
-
-    // Add response interceptor for handling 401 errors
-    const responseInterceptor = axios.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response?.status === 401) {
-          // Clear invalid token
-          localStorage.removeItem('token');
-          setToken(null);
-          setUser(null);
-          delete axios.defaults.headers.common['Authorization'];
-          
-          // Only show toast if it's not a background check
-          if (error.config.url !== '/api/auth/me') {
-            toast.error('Session expired. Please login again.');
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
-
-    // Cleanup interceptor on unmount
-    return () => {
-      axios.interceptors.response.eject(responseInterceptor);
-    };
-  }, [token, API_BASE_URL]);
 
   // Check if user is authenticated on mount
   useEffect(() => {
-    const checkAuth = async () => {
-      if (token) {
-        try {
-          const response = await axios.get('/api/auth/me');
-          if (response.data.success && response.data.data?.user) {
-            setUser(response.data.data.user);
-          } else {
-            console.error('Invalid user data received');
-            logout();
-          }
-        } catch (error) {
-          console.error('Auth check failed:', error);
-          // Don't show toast for background auth checks
-          if (error.response?.status === 401) {
-            logout();
-          }
-        }
-      }
-      setLoading(false);
-    };
-
     checkAuth();
-  }, [token]);
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Set default authorization header
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
+        // Try to get user data
+        const response = await axios.get(API_ENDPOINTS.AUTH_ME);
+        setUser(response.data.data.user);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      // Clear invalid token
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/api/auth/login', {
-        email,
-        password
-      });
-
-      if (response.data.success && response.data.data) {
-        const { user: userData, token: authToken } = response.data.data;
-        
-        setUser(userData);
-        setToken(authToken);
-        localStorage.setItem('token', authToken);
-        
-        toast.success('Login successful!');
-        return { success: true };
-      } else {
-        throw new Error('Invalid response format');
-      }
+      const response = await axios.post(API_ENDPOINTS.LOGIN, { email, password });
+      const { token, user } = response.data.data;
+      
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      setUser(user);
+      
+      toast.success('Login successful!');
+      return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed';
       toast.error(message);
@@ -110,81 +61,34 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signup = async (name, email, password) => {
+  const register = async (userData) => {
     try {
-      const response = await axios.post('/api/auth/signup', {
-        name,
-        email,
-        password
-      });
-
-      if (response.data.success && response.data.data) {
-        const { user: userData, token: authToken } = response.data.data;
-        
-        setUser(userData);
-        setToken(authToken);
-        localStorage.setItem('token', authToken);
-        
-        toast.success('Account created successfully!');
-        return { success: true };
-      } else {
-        throw new Error('Invalid response format');
-      }
+      const response = await axios.post(API_ENDPOINTS.REGISTER, userData);
+      const { token, user } = response.data.data;
+      
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      setUser(user);
+      
+      toast.success('Registration successful!');
+      return { success: true };
     } catch (error) {
-      const message = error.response?.data?.message || 'Signup failed';
+      const message = error.response?.data?.message || 'Registration failed';
       toast.error(message);
       return { success: false, message };
     }
   };
 
-  const adminLogin = async (email, password) => {
+  const logout = async () => {
     try {
-      const response = await axios.post('/api/auth/admin-login', {
-        email,
-        password
-      });
-
-      if (response.data.success && response.data.data) {
-        const { user: userData, token: authToken } = response.data.data;
-        
-        setUser(userData);
-        setToken(authToken);
-        localStorage.setItem('token', authToken);
-        
-        toast.success('Admin login successful!');
-        return { success: true };
-      } else {
-        throw new Error('Invalid response format');
-      }
+      await axios.post(API_ENDPOINTS.LOGOUT);
     } catch (error) {
-      const message = error.response?.data?.message || 'Admin login failed';
-      toast.error(message);
-      return { success: false, message };
-    }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
-    toast.success('Logged out successfully');
-  };
-
-  const updateProfile = async (profileData) => {
-    try {
-      const response = await axios.put('/api/user/profile', profileData);
-      if (response.data.success && response.data.data?.user) {
-        setUser(response.data.data.user);
-        toast.success('Profile updated successfully!');
-        return { success: true };
-      } else {
-        throw new Error('Invalid response format');
-      }
-    } catch (error) {
-      const message = error.response?.data?.message || 'Profile update failed';
-      toast.error(message);
-      return { success: false, message };
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+      setUser(null);
+      toast.success('Logged out successfully');
     }
   };
 
@@ -192,12 +96,9 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     login,
-    signup,
-    adminLogin,
+    register,
     logout,
-    updateProfile,
-    isAuthenticated: !!user && !!token,
-    isAdmin: user?.role === 'admin'
+    checkAuth
   };
 
   return (
